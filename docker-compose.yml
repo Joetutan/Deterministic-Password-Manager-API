@@ -13,7 +13,7 @@ services:
       - "${API_PORT}:8000"
 
     volumes:
-      - ./app:/app/app
+      - ./:/app
 
     depends_on:
       postgres:
