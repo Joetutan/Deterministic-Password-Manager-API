@@ -1,5 +1,4 @@
 class AccountPolicy:
-
         length: int = 20
         lower: bool=True
         upper: bool=True

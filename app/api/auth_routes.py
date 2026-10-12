@@ -6,6 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from app.api.auth_dependencies import get_current_user, get_user_repository
 from app.repository.user_repository import UserRepository
 from app.schemas.auth_schema import ResponseToken, UserCreate, UserResponse
+from app.schemas.meta_schema import VaultMetaResponse
 from app.service.auth_service import AuthService
 
 router = APIRouter(prefix="/api/v1/auth", tags=["authentication"])

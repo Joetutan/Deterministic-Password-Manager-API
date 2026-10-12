@@ -20,9 +20,12 @@ def get_current_user(token: Annotated[str,Depends(oauth2_schema)], db: Annotated
 
         try:
             user_id = security.verify_access_token(token)
+
             if user_id is None:
                 raise credentials_exception
+            
             user_id = int(user_id)
+
         except (ValueError, TypeError) as exc:
             raise credentials_exception from exc
         

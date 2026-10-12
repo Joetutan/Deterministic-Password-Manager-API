@@ -1,10 +1,10 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, Integer, LargeBinary, String, func
-from sqlalchemy.orm import Mapped, composite, mapped_column
+from sqlalchemy import DateTime, LargeBinary, String, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.config.database import Base
-from app.config.vault_meta import VaultMeta
+from app.models.account_model import Account
 
 
 class User(Base):
@@ -22,16 +22,9 @@ class User(Base):
 
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
-    vault_meta: Mapped[VaultMeta] = composite(
-        VaultMeta,
-        mapped_column("vault_salt", LargeBinary(16), nullable=False),
-        mapped_column("vault_algorithm", String(32), nullable=False),
-        mapped_column("vault_cipher", String(32), nullable=False),
-        mapped_column("vault_hash_length", Integer, nullable=False),
-        mapped_column("vault_time_cost", Integer, nullable=False),
-        mapped_column("vault_memory_cost", Integer, nullable=False),
-        mapped_column("vault_parallelism", Integer, nullable=False),
-        mapped_column("vault_version", Integer, nullable=False, default=1)
-    )
+    meta: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
+
+    accounts: Mapped[list["Account"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+
 
 

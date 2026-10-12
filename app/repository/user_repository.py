@@ -1,7 +1,8 @@
+import json
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.config.env_settings import settings
 from app.config.vault_meta import VaultMeta
 from app.models.user_model import User
 
@@ -11,15 +12,9 @@ class UserRepository:
         self.db = db
 
     def create(self, username:str, email:str, password_hash:str) -> User:
-        vault_meta = VaultMeta.create(
-            algorithm=settings.algorithm,
-            cipher=settings.cipher,
-            hash_length=settings.hash_length,
-            time_cost=settings.time_cost,
-            memory_cost=settings.memory_cost,
-            parallelism=settings.parallelism
-        )
-        user = User(username=username, email=email, password_hash=password_hash, vault_meta=vault_meta)
+        meta = VaultMeta()
+        data = json.dumps(meta.to_dict(), indent=4).encode("utf-8")
+        user = User(username=username, email=email, password_hash=password_hash, meta=data)
         self.db.add(user)
         self.db.commit()
         self.db.refresh(user)
