@@ -1,13 +1,13 @@
 #import threading
 
 #import pyperclip
-from app.models.account_base_model import Account
+from app.models.account_data_model import AccountMeta
 from app.service.cryptography.passkey_formatter import KeyFormat
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
 
-def gen_account_key( master_key:bytes, account: Account) -> str:
+def gen_account_key( master_key:bytes, account: AccountMeta) -> str:
 
         info = (f"{account.system_name}:{account.version}".encode())
 

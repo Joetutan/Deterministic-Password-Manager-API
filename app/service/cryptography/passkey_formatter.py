@@ -4,12 +4,21 @@ import string
 
 from app.models.policy_data_model import AccountPolicy
 
+'''
 char_set = {
     "lower": string.ascii_lowercase,
     "upper": string.ascii_uppercase,
     "digits": string.digits,
     "symbols": "!@#$%^&*()-_=+[]{}"
 }
+'''
+char_set = {
+    "lower": "abcdefghijklmnopqrstuvwxyz",
+    "upper": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "digits": "0123456789",
+    "symbols": "!@#$%^&*()-_=+",
+}
+
 
 class KeyFormat:
 
@@ -17,15 +26,17 @@ class KeyFormat:
 
         groups = []
 
-        match policy:
-            case policy.lower:
-                groups.append(char_set["loser"])
-            case policy.upper:
-                groups.append(char_set["upper"])
-            case policy.digits:
-                groups.append(char_set["digits"])
-            case policy.symbols:
-                groups.append(char_set["symbols"])
+        if policy.lower:
+            groups.append(char_set["lower"])
+
+        if policy.upper:
+            groups.append(char_set["upper"])
+
+        if policy.digits:
+            groups.append(char_set["digits"])
+
+        if policy.symbols:
+            groups.append(char_set["symbols"])
 
 
         if not groups:
@@ -71,7 +82,7 @@ class KeyFormat:
         while True:
             block = hmac.new(key, counter.to_bytes(4, "big"),hashlib.sha256).digest()
 
-            yield block
+            yield from block
 
             counter += 1
          

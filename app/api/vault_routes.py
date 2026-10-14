@@ -11,6 +11,7 @@ from app.config.database import get_db
 from app.models.user_model import User
 from app.repository.vault_repository import VaultRepository
 from app.schemas.account_schema import AccountCreate, AccountResponse
+from app.schemas.pass_schema import PassResponse
 from app.service.vault_service import VaultService
 
 router = APIRouter(prefix="/api/v1/vault", tags=["vault"])
@@ -31,12 +32,17 @@ def add_account(
 
     return AccountResponse(system_name=account.system_name )
 
-@router.get("")
+@router.post("/{system_name}/generate", response_model=PassResponse)
 def get_passkey(
-    current_user: Annotated[User , Depends(get_current_user)], 
-    data: AccountCreate,
+    current_user: Annotated[User, Depends(get_current_user)],
+    system_name: str,
     service: Annotated[VaultService, Depends(get_vault_service)],
-    master_password: Annotated[str, Form()]):
-
-    return service.get_account(user=current_user, system_name=data.system_name, password=master_password)
+    master_password: Annotated[str, Form()],
+):
+    passkey = service.get_account(
+        user=current_user,
+        system_name=system_name,
+        password=master_password,
+    )
+    return PassResponse(password=passkey)
 

@@ -29,7 +29,7 @@ class AccountMeta:
         return cls(
             last_rotated=datetime.fromisoformat(data["last_rotated"]),
             system_name = data["system_name"],
-            user_name = data["user_name"],
+            username = data["user_name"],
             version = data["version"],
             policy=AccountPolicy.from_dict(data["policy"])
         )

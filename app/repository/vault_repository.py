@@ -1,5 +1,6 @@
 import json
 
+from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -23,13 +24,18 @@ class VaultRepository:
         self.db.refresh(account)
         return account
 
-    def get_account(self, user_id:int, system_name:str, master_key:bytes)-> Account:
+    def get_account(self, user_id:int, system_name:str, master_key:bytes)-> AccountMeta:
 
         statement = select(Account).where(Account.user_id==user_id).where(Account.system_name==system_name)
-        account = self.db.scalary(statement)
+        account = self.db.scalar(statement)
 
         encrypted = account.payload
         data = self.crypt.decrypt_account(master_key, encrypted)
         payload = json.loads(data.decode("utf-8"))
 
-        return Account.from_dict(payload)
+        return AccountMeta.from_dict(payload)
+
+    def get_by_system_name(self, user_id:int, system_name:str)-> Account | None:
+        statement = select(Account).where(Account.user_id==user_id).where(Account.system_name==system_name)
+        account = self.db.scalar(statement)
+        return account

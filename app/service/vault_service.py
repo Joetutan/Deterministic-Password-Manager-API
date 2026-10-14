@@ -18,6 +18,14 @@ class VaultService:
 
     def create_account(self,user:User, system_name:str, username:str, symbols:bool, password:str ):
 
+        account = self.repository.get_by_system_name(user.id, system_name)
+
+        if account:
+            raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="An account with this system name already exists.",
+                )
+
         policy = AccountPolicy(symbols=symbols)
         
         meta = get_user_meta(user)
@@ -32,6 +40,7 @@ class VaultService:
         return self.repository.create(user.id, master_key, account_meta)
 
     def get_account(self, user:User, system_name:str, password:str):
+        
         meta = get_user_meta(user)
 
         master_key = gen_master_key(password, meta)
