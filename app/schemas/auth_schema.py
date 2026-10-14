@@ -1,7 +1,5 @@
 from pydantic import BaseModel, EmailStr
 
-from app.config.vault_meta import VaultMeta
-
 
 class UserCreate(BaseModel):
     username: str

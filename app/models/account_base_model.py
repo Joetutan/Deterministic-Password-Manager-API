@@ -20,10 +20,6 @@ class Account(Base):
 
     system_name: Mapped[str] = mapped_column( String(255), nullable=False)
 
-    nonce: Mapped[bytes] = mapped_column(LargeBinary(12),nullable=False)
-
-    encrypted_payload: Mapped[bytes] = mapped_column(LargeBinary,nullable=False)
-
-    version: Mapped[int] = mapped_column(default=1,nullable=False)
+    payload: Mapped[bytes] = mapped_column(LargeBinary,nullable=False)
 
     user: Mapped["User"] = relationship(back_populates="accounts")
