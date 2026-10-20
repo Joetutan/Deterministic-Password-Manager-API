@@ -18,7 +18,9 @@ class Account(Base):
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"),nullable=False,index=True)
 
-    system_name: Mapped[str] = mapped_column( String(255), nullable=False)
+    account_alias: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+
+    system_name: Mapped[str] = mapped_column(String(255), nullable=False)
 
     payload: Mapped[bytes] = mapped_column(LargeBinary,nullable=False)
 
