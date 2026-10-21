@@ -22,34 +22,40 @@ def get_vault_service(db: Annotated[Session, Depends(get_db)])->VaultService:
 
 @router.post("",response_model=AccountResponse, status_code=status.HTTP_201_CREATED)
 def add_account(
-    symbols: Annotated[bool, Form()],
-    master_password: Annotated[str, Form()],
-    account_alias:Annotated[str, Form()],
-    username: Annotated[str, Form()],
-    system_name: Annotated[str, Form()],
-    current_user: Annotated[User , Depends(get_current_user)], 
-    service: Annotated[VaultService, Depends(get_vault_service)] ) -> AccountResponse:
+        symbols: Annotated[bool, Form()],
+        master_password: Annotated[str, Form()],
+        account_alias:Annotated[str, Form()],
+        username: Annotated[str, Form()],
+        system_name: Annotated[str, Form()],
+        current_user: Annotated[User , Depends(get_current_user)], 
+        service: Annotated[VaultService, Depends(get_vault_service)] 
+    ) -> AccountResponse:
     return service.create_account(user=current_user,system_name=system_name,username=username,alias=account_alias, symbols=symbols, password=master_password)
-
-
-@router.post("/{system_name}/generate", response_model=PassResponse)
-def get_passkey(
-    current_user: Annotated[User, Depends(get_current_user)],
-    account_alias: Annotated[str, Form()],
-    service: Annotated[VaultService, Depends(get_vault_service)],
-    master_password: Annotated[str, Form()],
-):
-    passkey = service.get_account(user=current_user,account_alias=account_alias,password=master_password)
-    return PassResponse(password=passkey)
-
-@router.patch("/{account_id}", response_model=AccountResponse,status_code=status.HTTP_201_CREATED)
-def rotate():
-    ...
 
 @router.get("", response_model=list[AccountResponse])
 def view_accounts(service:Annotated[VaultService, Depends(get_vault_service)], current_user:Annotated[User, Depends(get_current_user)], master_password:Annotated[str,Form])->list[AccountResponse]:
     return service.view_accunts(user=current_user, password=master_password)
 
-@router.delete("/{account_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_account():
+@router.post("/{account_alias}/generate", response_model=PassResponse)
+def get_passkey(
+        current_user: Annotated[User, Depends(get_current_user)],
+        account_alias: Annotated[str, Form()],
+        service: Annotated[VaultService, Depends(get_vault_service)],
+        master_password: Annotated[str, Form()]
+    ):
+    passkey = service.get_passkey(user=current_user,account_alias=account_alias,password=master_password)
+    return PassResponse(password=passkey)
+
+@router.delete("/{account_alias}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_account ( 
+        current_user: Annotated[User, Depends(get_current_user)],
+        account_alias: Annotated[str, Form()],
+        service: Annotated[VaultService, Depends(get_vault_service)]
+     ) -> None:
+    service.delete_account(user=current_user,account_alias=account_alias)
+    
+
+@router.patch("/{account_id}", response_model=AccountResponse,status_code=status.HTTP_201_CREATED)
+def rotate():
     ...
+

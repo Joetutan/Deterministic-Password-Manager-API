@@ -40,6 +40,12 @@ class VaultRepository:
         account = self.db.scalar(statement)
         return account
 
+    def delete_account(self,user_id:int,account_alias:str) -> None:
+        statement = select(Account).where(Account.user_id==user_id).where(Account.account_alias==account_alias)
+        account = self.db.scalar(statement)
+        self.db.delete(account)
+        self.db.commit()
+
     def get_all(self, user_id:int)->list[AccountMeta]:
 
         statement = select(Account).where(Account.user_id==user_id)
