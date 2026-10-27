@@ -38,7 +38,7 @@ class VaultService:
         master_key = gen_master_key(password, meta)
         if not master_key:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Password")
-        accounts = self.repository.get_all(user_id=user.id, password=password)
+        accounts = self.repository.get_all(user_id=user.id)
         return[AccountResponse.model_validate(account) for account in accounts]
     
     def get_passkey(self, user:User, account_alias:str, password:str):
@@ -46,7 +46,7 @@ class VaultService:
         master_key = gen_master_key(password, meta)
         if not master_key:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Password")
-        account =  self.repository.get_account(user.id, account_alias,master_key)
+        account =  self.repository.get_account(user_id=user.id, account_alias=account_alias,master_key=master_key)
         return gen_account_key(master_key, account)
 
     def delete_account(self, user:User, account_alias:str):

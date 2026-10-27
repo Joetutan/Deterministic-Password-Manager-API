@@ -33,13 +33,16 @@ def add_account(
     return service.create_account(user=current_user,system_name=system_name,username=username,alias=account_alias, symbols=symbols, password=master_password)
 
 @router.get("", response_model=list[AccountResponse])
-def view_accounts(service:Annotated[VaultService, Depends(get_vault_service)], current_user:Annotated[User, Depends(get_current_user)], master_password:Annotated[str,Form])->list[AccountResponse]:
-    return service.view_accunts(user=current_user, password=master_password)
+def view_accounts(
+    service:Annotated[VaultService, Depends(get_vault_service)], 
+    current_user:Annotated[User, Depends(get_current_user)], 
+    master_password:Annotated[str,Form])->list[AccountResponse]:
+    return service.view_accounts(user=current_user, password=master_password)
 
-@router.post("/{account_alias}/generate", response_model=PassResponse)
+@router.get("/{account_alias}/generate", response_model=PassResponse)
 def get_passkey(
         current_user: Annotated[User, Depends(get_current_user)],
-        account_alias: Annotated[str, Form()],
+        account_alias: str,
         service: Annotated[VaultService, Depends(get_vault_service)],
         master_password: Annotated[str, Form()]
     ):
@@ -49,7 +52,7 @@ def get_passkey(
 @router.delete("/{account_alias}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_account ( 
         current_user: Annotated[User, Depends(get_current_user)],
-        account_alias: Annotated[str, Form()],
+        account_alias: str,
         service: Annotated[VaultService, Depends(get_vault_service)]
      ) -> None:
     service.delete_account(user=current_user,account_alias=account_alias)

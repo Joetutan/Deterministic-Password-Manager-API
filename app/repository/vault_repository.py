@@ -29,6 +29,9 @@ class VaultRepository:
         statement = select(Account).where(Account.user_id==user_id).where(Account.account_alias==account_alias)
         account = self.db.scalar(statement)
 
+        if not account:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Account not found")
+
         encrypted = account.payload
         data = self.crypt.decrypt_account(master_key, encrypted)
         payload = json.loads(data.decode("utf-8"))
@@ -42,7 +45,10 @@ class VaultRepository:
 
     def delete_account(self,user_id:int,account_alias:str) -> None:
         statement = select(Account).where(Account.user_id==user_id).where(Account.account_alias==account_alias)
+
         account = self.db.scalar(statement)
+        if not account:
+                    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Account not found")
         self.db.delete(account)
         self.db.commit()
 
@@ -50,6 +56,9 @@ class VaultRepository:
 
         statement = select(Account).where(Account.user_id==user_id)
         payload = self.db.scalars(statement).all()
+
+        if not payload:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No accounts found")
         #accounts = []
         #for account in payload:
         #    accounts.append(AccountMeta.fromdict(account))
